@@ -1,57 +1,139 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-    provider = "prisma-client-js"
-    output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
-    provider = "mysql"
-    url      = env("DATABASE_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
-model User {
-    id        Int      @id @default(autoincrement())
-    email     String   @unique
-    name      String?
-    password  String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    beats     Beat[]
+model beats {
+  id              Int              @id @default(autoincrement())
+  id_productor    Int?
+  titulo          String?          @db.VarChar(100)
+  genero          String?          @db.VarChar(50)
+  bpm             Int?
+  mood            String?          @db.VarChar(50)
+  precio          Decimal?         @db.Decimal(8, 2)
+  archivo_preview String?          @db.VarChar(255)
+  archivo_full    String?          @db.VarChar(255)
+  estado          beats_estado?    @default(publico)
+  fecha_subida    DateTime?        @default(now()) @db.DateTime(0)
+  duracion        String?          @db.VarChar(10)
+  nota_musical    String?          @db.VarChar(10)
+  archivo_visual  String?          @db.VarChar(255)
+  usuarios        usuarios?        @relation(fields: [id_productor], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "beats_ibfk_1")
+  licencias       licencias[]
+  playlist_beats  playlist_beats[]
+  ventas          ventas[]
 
-    Purchase Purchase[]
+  @@index([id_productor], map: "id_productor")
 }
 
-model Beat {
-    id          Int      @id @default(autoincrement())
-    title       String
-    description String?
-    price       Float
-    audioUrl    String
-    coverUrl    String?
-    userId      Int
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
-
-    user     User       @relation(fields: [userId], references: [id])
-    Purchase Purchase[]
-
-    @@index([userId])
+model favoritos {
+  id             Int       @id @default(autoincrement())
+  id_usuario     Int
+  id_beat        Int
+  fecha_agregado DateTime? @default(now()) @db.DateTime(0)
 }
 
-model Purchase {
-    id        Int      @id @default(autoincrement())
-    userId    Int
-    beatId    Int
-    createdAt DateTime @default(now())
+model licencias {
+  id               Int             @id @default(autoincrement())
+  id_beat          Int?
+  tipo             licencias_tipo?
+  condiciones      String?         @db.Text
+  precio           Decimal?        @db.Decimal(8, 2)
+  archivo_licencia String?         @db.VarChar(255)
+  disponible       Boolean?        @default(true)
+  beats            beats?          @relation(fields: [id_beat], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "licencias_ibfk_1")
+  ventas           ventas[]
 
-    user User @relation(fields: [userId], references: [id])
-    beat Beat @relation(fields: [beatId], references: [id])
+  @@index([id_beat], map: "id_beat")
+}
 
-    @@index([userId])
-    @@index([beatId])
+model mensajes {
+  id                                       Int       @id @default(autoincrement())
+  remitente                                Int?
+  destinatario                             Int?
+  asunto                                   String?   @db.VarChar(100)
+  mensaje                                  String?   @db.Text
+  fecha                                    DateTime? @default(now()) @db.DateTime(0)
+  leido                                    Boolean?  @default(false)
+  usuarios_mensajes_remitenteTousuarios    usuarios? @relation("mensajes_remitenteTousuarios", fields: [remitente], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mensajes_ibfk_1")
+  usuarios_mensajes_destinatarioTousuarios usuarios? @relation("mensajes_destinatarioTousuarios", fields: [destinatario], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "mensajes_ibfk_2")
+
+  @@index([destinatario], map: "destinatario")
+  @@index([remitente], map: "remitente")
+}
+
+model playlist_beats {
+  id_playlist Int
+  id_beat     Int
+  playlists   playlists @relation(fields: [id_playlist], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "playlist_beats_ibfk_1")
+  beats       beats     @relation(fields: [id_beat], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "playlist_beats_ibfk_2")
+
+  @@id([id_playlist, id_beat])
+  @@index([id_beat], map: "id_beat")
+}
+
+model playlists {
+  id             Int              @id @default(autoincrement())
+  id_usuario     Int?
+  nombre         String?          @db.VarChar(100)
+  fecha          DateTime?        @default(now()) @db.DateTime(0)
+  playlist_beats playlist_beats[]
+  usuarios       usuarios?        @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "playlists_ibfk_1")
+
+  @@index([id_usuario], map: "id_usuario")
+}
+
+model usuarios {
+  id                                       Int           @id @default(autoincrement())
+  nombre_usuario                           String?       @unique(map: "nombre_usuario") @db.VarChar(50)
+  correo                                   String?       @unique(map: "correo") @db.VarChar(100)
+  contrasena                               String?       @db.VarChar(255)
+  tipo                                     usuarios_tipo
+  foto_perfil                              String?       @db.VarChar(255)
+  banner                                   String?       @db.VarChar(255)
+  bio                                      String?       @db.Text
+  fecha_registro                           DateTime?     @default(now()) @db.DateTime(0)
+  beats                                    beats[]
+  mensajes_mensajes_remitenteTousuarios    mensajes[]    @relation("mensajes_remitenteTousuarios")
+  mensajes_mensajes_destinatarioTousuarios mensajes[]    @relation("mensajes_destinatarioTousuarios")
+  playlists                                playlists[]
+  ventas                                   ventas[]
+}
+
+model ventas {
+  id                Int        @id @default(autoincrement())
+  id_beat           Int?
+  id_usuario        Int?
+  id_licencia       Int?
+  monto             Decimal?   @db.Decimal(8, 2)
+  fecha             DateTime?  @default(now()) @db.DateTime(0)
+  archivo_entregado String?    @db.VarChar(255)
+  beats             beats?     @relation(fields: [id_beat], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ventas_ibfk_1")
+  usuarios          usuarios?  @relation(fields: [id_usuario], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ventas_ibfk_2")
+  licencias         licencias? @relation(fields: [id_licencia], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "ventas_ibfk_3")
+
+  @@index([id_beat], map: "id_beat")
+  @@index([id_licencia], map: "id_licencia")
+  @@index([id_usuario], map: "id_usuario")
+}
+
+enum licencias_tipo {
+  leasing
+  exclusivo
+}
+
+enum usuarios_tipo {
+  productor
+  comprador
+}
+
+enum beats_estado {
+  publico
+  oculto
+  eliminado
 }
