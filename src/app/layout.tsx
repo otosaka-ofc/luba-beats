@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { IconArrowRightToArc, IconLayout2Filled, IconUserPlus } from '@tabler/icons-react';
+import Link from 'next/link';
 
 const geistSans = Geist({
     variable: '--font-geist-sans',
@@ -20,13 +21,13 @@ export const metadata: Metadata = {
 
 function NavItem({ text, href, icon }: { text: string; href: string; icon: React.ReactNode }) {
     return (
-        <a
+        <Link
             href={href}
             className="group flex items-center border-2 border-emerald-500 rounded-full px-3 py-1 font-bold text-emerald-500 hover:bg-emerald-500 hover:text-white transition"
         >
             {icon}
             {text}
-        </a>
+        </Link>
     );
 }
 
@@ -38,34 +39,42 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased h-full w-full bg-base-300`}
+                className={`${geistSans.variable} ${geistMono.variable} h-full w-full bg-base-300`}
             >
-                <div className="navbar bg-base-100 shadow-sm flex justify-between border-b-2 border-emerald-800">
-                    <a className="flex items-center btn btn-ghost text-xl rounded-2xl">
-                        <span className="text-emerald-500 text-3xl text-shadow-[0_0_0px_#10b981,0_0_2px_#10b981,0_0_12px_#10b981]">
-                            LUBA
-                        </span>
-                        <span>BEATS</span>
-                    </a>
-                    <div className="flex gap-4 me-4">
-                        <NavItem
-                            href=""
-                            icon={<IconLayout2Filled className="size-7" />}
-                            text="Public Catalog"
-                        />
-                        <NavItem
-                            href=""
-                            icon={<IconArrowRightToArc className="size-7 me-1" />}
-                            text="Login"
-                        />
-                        <NavItem
-                            href=""
-                            icon={<IconUserPlus className="size-7 me-1" />}
-                            text="Sign in"
-                        />
+                {/* <div className="w-full max-h-full bg-base-300">{children}</div> */}
+                <div className="flex flex-col h-screen">
+                    <div className="navbar bg-base-100 shadow-sm flex justify-between border-b-2 border-emerald-800">
+                        <Link
+                            href="/"
+                            className="flex items-center btn btn-ghost text-xl rounded-2xl"
+                        >
+                            <span className="text-emerald-500 text-3xl text-shadow-[0_0_0px_#10b981,0_0_2px_#10b981,0_0_12px_#10b981]">
+                                LUBA
+                            </span>
+                            <span>BEATS</span>
+                        </Link>
+                        <div className="flex gap-4 me-4">
+                            <NavItem
+                                href="/catalog"
+                                icon={<IconLayout2Filled className="size-7" />}
+                                text="Public Catalog"
+                            />
+                            <NavItem
+                                href="login"
+                                icon={<IconArrowRightToArc className="size-7 me-1" />}
+                                text="Login"
+                            />
+                            <NavItem
+                                href=""
+                                icon={<IconUserPlus className="size-7 me-1" />}
+                                text="Sign in"
+                            />
+                        </div>
+                    </div>
+                    <div className="flex-1 w-full overflow-y-auto bg-base-300 grid-scroll">
+                        {children}
                     </div>
                 </div>
-                <div className="h-full w-full bg-base-300 overflow-auto">{children}</div>
             </body>
         </html>
     );
