@@ -1,5 +1,5 @@
 'use client';
-import NavItem from '@/components/NavItem';
+import NavItem from '@/app/components/NavItem';
 import {
     IconArrowRightToArc,
     IconAsterisk,
@@ -112,8 +112,8 @@ export default function Home() {
                                     isSelected
                                         ? 'bg-emerald-500 text-white'
                                         : isFocused
-                                        ? 'bg-base-300'
-                                        : ''
+                                            ? 'bg-base-300'
+                                            : ''
                                 }`,
                             singleValue: () => 'text-base-content',
                             placeholder: () => 'text-base-content',

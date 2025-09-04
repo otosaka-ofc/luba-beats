@@ -3,7 +3,7 @@ import './globals.css';
 import { IconArrowRightToArc, IconLayout2Filled, IconUserPlus } from '@tabler/icons-react';
 import Link from 'next/link';
 
-import NavItem from '@/components/NavItem';
+import NavItem from '@/app/components/NavItem';
 
 export const metadata: Metadata = {
     title: 'Luba Beats',
@@ -37,14 +37,14 @@ export default function RootLayout({
                                 text="Public Catalog"
                             />
                             <NavItem
-                                href="/login"
+                                href="/auth/signin"
                                 icon={<IconArrowRightToArc className="size-7 me-1" />}
-                                text="Login"
+                                text="Sign In"
                             />
                             <NavItem
-                                href="/signin"
+                                href="/auth/signup"
                                 icon={<IconUserPlus className="size-7 me-1" />}
-                                text="Sign in"
+                                text="Sign Up"
                             />
                         </div>
                     </div>

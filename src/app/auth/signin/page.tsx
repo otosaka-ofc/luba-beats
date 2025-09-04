@@ -1,5 +1,5 @@
 'use client';
-import NavItem from '@/components/NavItem';
+import NavItem from '@/app/components/NavItem';
 import {
     IconEyeFilled,
     IconEyeOff,
