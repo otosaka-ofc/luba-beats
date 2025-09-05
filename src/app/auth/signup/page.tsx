@@ -1,5 +1,5 @@
-'use client';
-import NavItem from '@/app/components/NavItem';
+"use client";
+import NavItem from "@/app/components/NavItem";
 import {
     IconArrowRightToArc,
     IconAsterisk,
@@ -9,10 +9,11 @@ import {
     IconMailFilled,
     IconRocket,
     IconUserFilled,
-} from '@tabler/icons-react';
-import React from 'react';
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import Select from 'react-select';
+} from "@tabler/icons-react";
+import React from "react";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import Select from "react-select";
+import axios from "axios";
 
 type FormValues = {
     username: string;
@@ -31,14 +32,15 @@ export default function Home() {
         formState: { isValid },
     } = useForm<FormValues>();
 
-    const onSubmit: SubmitHandler<FormValues> = (data: FormValues) => {
+    const onSubmit: SubmitHandler<FormValues> = async (data: FormValues) => {
         clearErrors();
-        console.log(data);
+        const response = await axios.post("/api/auth/signup", data);
+        console.log(response);
     };
 
     const options = [
-        { value: 'productor', label: 'Productor' },
-        { value: 'comprador', label: 'Comprador' },
+        { value: "productor", label: "Productor" },
+        { value: "comprador", label: "Comprador" },
     ];
     return (
         <form
@@ -52,7 +54,7 @@ export default function Home() {
                     type="text"
                     className="ms-2 outline-none focus:outline-none"
                     placeholder="Nombre de usuario"
-                    {...register('username', { required: true })}
+                    {...register("username", { required: true })}
                 />
                 <IconAsterisk className="size-4 text-red-500" />
             </label>
@@ -63,17 +65,17 @@ export default function Home() {
                     type="email"
                     className="ms-2 outline-none focus:outline-none"
                     placeholder="Correo electrónico"
-                    {...register('email', { required: true })}
+                    {...register("email", { required: true })}
                 />
                 <IconAsterisk className="size-4 text-red-500" />
             </label>
             <label className="flex items-center ring-2 ring-emerald-500 text-2xl rounded-2xl mt-5">
                 <IconLockFilled className="m-2 size-7 text-emerald-500" />
                 <input
-                    type={`${showPassword ? 'text' : 'password'}`}
+                    type={`${showPassword ? "text" : "password"}`}
                     className="ms-2 outline-none focus:outline-none"
                     placeholder="Contraseña"
-                    {...register('password', { required: true })}
+                    {...register("password", { required: true })}
                 />
                 <IconAsterisk className="size-4 text-red-500" />
                 <button
@@ -104,19 +106,19 @@ export default function Home() {
                         className="text-start mt-5"
                         classNames={{
                             control: () =>
-                                'bg-base-200 text-base-content border-2 border-emerald-500 rounded-2xl px-4 py-2 focus:ring-2 focus:ring-emerald-500 outline-none',
+                                "bg-base-200 text-base-content border-2 border-emerald-500 rounded-2xl px-4 py-2 focus:ring-2 focus:ring-emerald-500 outline-none",
                             menu: () =>
-                                'bg-base-200 text-base-content border-2 border-emerald-500 rounded-2xl mt-2',
+                                "bg-base-200 text-base-content border-2 border-emerald-500 rounded-2xl mt-2",
                             option: ({ isFocused, isSelected }) =>
                                 `px-4 py-2 cursor-pointer rounded-2xl ${
                                     isSelected
-                                        ? 'bg-emerald-500 text-white'
+                                        ? "bg-emerald-500 text-white"
                                         : isFocused
-                                            ? 'bg-base-300'
-                                            : ''
+                                            ? "bg-base-300"
+                                            : ""
                                 }`,
-                            singleValue: () => 'text-base-content',
-                            placeholder: () => 'text-base-content',
+                            singleValue: () => "text-base-content",
+                            placeholder: () => "text-base-content",
                         }}
                     />
                 )}
@@ -126,7 +128,8 @@ export default function Home() {
                 disabled={!isValid}
                 className="flex btn btn-success rounded-2xl w-1/2 justify-center bg-emerald-500 border-none text-2xl mx-auto mt-5"
             >
-                <IconRocket className="size-8" /> Ingresar
+                <IconRocket className="size-8" />
+                Registrarse
             </button>
             <div className="divider w-full h-2">Ó</div>
             <NavItem
